@@ -1,7 +1,7 @@
 {spawn} = require 'child_process'
 
 task 'watch', 'watch src/ and concatenate them to lib/main.js', (callback) ->
-  watch = spawn 'coffee', ['-w', 'src/']
+  watch = spawn 'coffee', ['-w', '/']
   watch.stderr.on 'data', (data) ->
     process.stderr.write data.toString()
   watch.stdout.on 'data', (data) ->
