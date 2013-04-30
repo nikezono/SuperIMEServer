@@ -15,6 +15,7 @@ db.on "error", (err) ->
 
 ## lib
 kanakanji = require './lib/kana'
+suggest = require './lib/suggest'
 
 ## Express
 
@@ -30,6 +31,8 @@ app.get "/", (req, response) ->
   query.hira = req.query.hira
   response.contentType "application/json"
   query.hiraURI = encodeURIComponent(query.hira)
+  query.candURI = encodeURIComponent(query.cand)
+  console.log query
 
   #かな漢字
   if query.mode is 0
@@ -37,45 +40,19 @@ app.get "/", (req, response) ->
       if reply?
         response.send reply.split(",")
       else
-        cands = kanakanji.getCandidates query, (cands)->
+        kanakanji.getCandidates query, (cands)->
           response.send cands
+          db.set "kana:" + query.hiraURI, cands, redis.print
 
   else if query.mode is 1
-
-  else if query.mode is 2
-
-  else if query.mode is 3
-    exists = false
-    db.get "super:" + hiraURI, (err, reply) ->
-      exists = reply
-      if exists?
-        db.get "super:" + hiraURI, (err, value) ->
-          candidates = value.split(",")
-          response.send candidates
-
+    db.get "super:" + query.candURI, (err, reply) ->
+      if reply?
+        response.send reply.split(",")
       else
-        http.get
-          host: "api.tiqav.com"
-          path: "/search.json?callback=&q=" + hira
-        , (res) ->
-          body = ""
-          res.on "data", (data) ->
-            body += data
+        suggest.getCandidates query, (cands)->
+          response.send cands
 
-          res.on "end", ->
-            Results = JSON.parse(body)
-            Results.forEach (image) ->
-              candidates.push "http://tiqav.com/" + image.id + "." + image.ext
 
-            db.set "super:" + hiraURI, candidates, redis.print
-            response.send candidates
-
-GoogleTransliterate = (array1, array2, hira) ->
-  res = []
-  array1.forEach (phrase) ->
-    array2[1].forEach (word) ->
-      res.push phrase + word  unless hira is phrase + word
-  return res
 
 
 server = http.createServer app
