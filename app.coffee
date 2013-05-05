@@ -62,15 +62,18 @@ server.listen (app.get 'port'), ->
 
 io = (require 'socket.io').listen server
 io.sockets.on 'connection', (socket) ->
+  console.log "connected"
+
   socket.on "pushed", (hiraURI) ->
+    console.log "handle 'pushed', arguments is #{hiraURI}"
     query = new Object
     query.hiraURI = hiraURI
     query.hira = decodeURIComponent(hiraURI)
     db.get "kana:" + hiraURI, (err, reply) ->
       if reply?
-        socket.emit 'send candidates', reply.split(",")
+        socket.emit 'send candidates', JSON.parse(reply.split(","))
       else
         kanakanji.getCandidates query, (cands)->
-          socket.emit 'send candidates', cands
+          socket.emit 'send candidates', JSON.parse(cands)
           db.set "kana:" + query.hiraURI, cands, redis.print
 
