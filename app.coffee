@@ -86,7 +86,7 @@ io.sockets.on 'connection', (socket) ->
       if reply?
         socket.emit 'send candidates', reply.split(",")
       else
-        kanakanji.getCandidates query, (cands)->
+        suggest.getCandidates query, (cands)->
           socket.emit 'send candidates', cands
           db.set "super:" + query.hiraURI, cands, redis.print
 
