@@ -35,6 +35,9 @@ app.get "/", (req, response) ->
   console.log query
 
   #かな漢字
+  # /?mode=0&hira=ごはん とかで動く
+  # @RETURN candidates [Array]
+
   if query.mode is 0
     db.get "kana:" + query.hiraURI, (err, reply) ->
       if reply?
