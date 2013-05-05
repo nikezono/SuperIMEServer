@@ -74,8 +74,8 @@ io.sockets.on 'connection', (socket) ->
         socket.emit 'send candidates', reply.split(",")
       else
         kanakanji.getCandidates query, (cands)->
-          socket.emit 'send candidates', cands)
-            db.set "kana:" + query.hiraURI, cands, redis.print
+          socket.emit 'send candidates', cands
+          db.set "kana:" + query.hiraURI, cands, redis.print
 
   socket.on "suggest", (hiraURI) ->
     console.log "handle 'suggest', arguments is #{hiraURI}"
@@ -83,10 +83,10 @@ io.sockets.on 'connection', (socket) ->
     query.hiraURI = hiraURI
     query.hira = decodeURIComponent(hiraURI)
     db.get "super:" + hiraURI, (err, reply) ->
-        if reply?
-          socket.emit 'send candidates', reply.split(",")
-        else
-          kanakanji.getCandidates query, (cands)->
-            socket.emit 'send candidates', cands)
-              db.set "super:" + query.hiraURI, cands, redis.print
+      if reply?
+        socket.emit 'send candidates', reply.split(",")
+      else
+        kanakanji.getCandidates query, (cands)->
+          socket.emit 'send candidates', cands
+          db.set "super:" + query.hiraURI, cands, redis.print
 
