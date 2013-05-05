@@ -1,6 +1,6 @@
 http = require 'http'
 exports.getCandidates = (query,callback) ->
-  console.log "かな漢字変換モード:"+query.hira
+  #console.log "かな漢字変換モード:"+query.hira
   candidates = new Array()
   body = ""
   http.get

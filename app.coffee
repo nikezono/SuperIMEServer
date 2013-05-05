@@ -56,8 +56,21 @@ app.get "/", (req, response) ->
           response.send cands
 
 
-
-
 server = http.createServer app
 server.listen (app.get 'port'), ->
   console.log "Express server listening on port " + app.get("port")
+
+io = (require 'socket.io').listen server
+io.sockets.on 'connection', (socket) ->
+  socket.on "pushed", (hiraURI) ->
+    query = new Object
+    query.hiraURI = hiraURI
+    query.hira = decodeURIComponent(hiraURI)
+    db.get "kana:" + hiraURI, (err, reply) ->
+      if reply?
+        socket.emit 'send candidates', reply.split(",")
+      else
+        kanakanji.getCandidates query, (cands)->
+          socket.emit 'send candidates', cands
+          db.set "kana:" + query.hiraURI, cands, redis.print
+

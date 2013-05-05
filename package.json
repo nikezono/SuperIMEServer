@@ -9,6 +9,7 @@
     "express": "*",
     "redis": "*",
     "coffee-script": "*",
-    "async": "*"
+    "async": "*",
+    "libxmljs": "*"
   }
 }
