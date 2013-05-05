@@ -69,11 +69,11 @@ io.sockets.on 'connection', (socket) ->
     query = new Object
     query.hiraURI = hiraURI
     query.hira = decodeURIComponent(hiraURI)
-    db.get "kana:" + hiraURI, (err, reply) ->
-      if reply?
-        socket.emit 'send candidates', JSON.parse(reply.split(","))
-      else
-        kanakanji.getCandidates query, (cands)->
-          socket.emit 'send candidates', JSON.parse(cands)
-          db.set "kana:" + query.hiraURI, cands, redis.print
+    #db.get "kana:" + hiraURI, (err, reply) ->
+      # if reply?
+      #   socket.emit 'send candidates', JSON.parse(reply.split(","))
+      # else
+    kanakanji.getCandidates query, (cands)->
+      socket.emit 'send candidates', cands
+          # db.set "kana:" + query.hiraURI, cands, redis.print
 

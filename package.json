@@ -10,6 +10,7 @@
     "redis": "*",
     "coffee-script": "*",
     "async": "*",
-    "libxmljs": "*"
+    "libxmljs": "*",
+    "socket.io": "*"
   }
 }
