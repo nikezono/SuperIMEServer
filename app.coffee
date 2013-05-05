@@ -64,16 +64,29 @@ io = (require 'socket.io').listen server
 io.sockets.on 'connection', (socket) ->
   console.log "connected"
 
-  socket.on "pushed", (hiraURI) ->
-    console.log "handle 'pushed', arguments is #{hiraURI}"
+  socket.on "kana", (hiraURI) ->
+    console.log "handle 'kana', arguments is #{hiraURI}"
     query = new Object
     query.hiraURI = hiraURI
     query.hira = decodeURIComponent(hiraURI)
-    #db.get "kana:" + hiraURI, (err, reply) ->
-      # if reply?
-      #   socket.emit 'send candidates', JSON.parse(reply.split(","))
-      # else
-    kanakanji.getCandidates query, (cands)->
-      socket.emit 'send candidates', cands
-          # db.set "kana:" + query.hiraURI, cands, redis.print
+    db.get "kana:" + hiraURI, (err, reply) ->
+      if reply?
+        socket.emit 'send candidates', reply.split(",")
+      else
+        kanakanji.getCandidates query, (cands)->
+          socket.emit 'send candidates', cands)
+            db.set "kana:" + query.hiraURI, cands, redis.print
+
+  socket.on "suggest", (hiraURI) ->
+    console.log "handle 'suggest', arguments is #{hiraURI}"
+    query = new Object
+    query.hiraURI = hiraURI
+    query.hira = decodeURIComponent(hiraURI)
+    db.get "super:" + hiraURI, (err, reply) ->
+        if reply?
+          socket.emit 'send candidates', reply.split(",")
+        else
+          kanakanji.getCandidates query, (cands)->
+            socket.emit 'send candidates', cands)
+              db.set "super:" + query.hiraURI, cands, redis.print
 

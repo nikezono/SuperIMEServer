@@ -1,12 +1,12 @@
 http = require 'http'
 libxmljs = require "libxmljs"
 exports.getCandidates = (query,callback) ->
-  console.log "Google サジェスト検索:"+query.cand
+  console.log "Google サジェスト検索:"+query.hira
   candidates = new Array()
   body = ""
   http.get
     host: "www.google.co.jp"
-    path: "/complete/search?output=toolbar&hl=ja&oe=utf_8&q="+query.candURI
+    path: "/complete/search?output=toolbar&hl=ja&oe=utf_8&q="+query.hiraURI
   , (res) ->
     res.on "data", (data) ->
       body += data
